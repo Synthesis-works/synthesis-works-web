@@ -1,7 +1,9 @@
 /**
  * Services — Benchmark Service
- * Communicates with backend /api/v1/benchmarks and execution endpoints via apiClient.
- * Maps DTOs into domain models via BenchmarkMapper without synthetic fallbacks.
+ * Communicates with the backend public catalogue at
+ * /api/v1/public/benchmarks (no session) and the authenticated execution
+ * endpoints via apiClient. Maps DTOs into domain models via BenchmarkMapper
+ * without synthetic fallbacks.
  */
 
 import { apiClient } from '@/core/api/client';
@@ -29,7 +31,9 @@ export interface BackendExecutionRunDTO {
 
 export async function getBenchmarks(): Promise<ServiceResult<Benchmark[]>> {
   try {
-    const rawRes = await apiClient.get<any>('/api/v1/benchmarks');
+    // The marketing site has no session: this endpoint serves published
+    // benchmarks only and is readable anonymously.
+    const rawRes = await apiClient.get<any>('/api/v1/public/benchmarks');
     let dtos: BackendBenchmarkRead[] = [];
     if (Array.isArray(rawRes)) {
       dtos = rawRes;
